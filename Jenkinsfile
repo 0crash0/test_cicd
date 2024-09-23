@@ -28,10 +28,10 @@ pipeline {
 
     stage('Build image') {
       steps{
-        script {
+        //script {
           //dockerImage = docker.build "${dockerimagename}"
           sh docker -t "${dockerimagename}:${env.BRANCH_NAME}" build .
-        }
+        //}
       }
     }
 
