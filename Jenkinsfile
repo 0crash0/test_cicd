@@ -21,7 +21,7 @@ pipeline {
     stage('Checkout Source') {
       steps {
         echo env.BRANCH_NAME
-        //git 'https://github.com/Bravinsimiyu/jenkins-kubernetes-deployment.git'
+        git 'https://github.com/0crash0/test_cicd.git'
       }
     }
 
