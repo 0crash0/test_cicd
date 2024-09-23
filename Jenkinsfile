@@ -3,8 +3,8 @@ pipeline {
   environment {
     dockerimagename = "0crash0/testdepl"
     dockerImage = ""
-    DOCKER_ID = credentials('DOCKER_ID')
-    DOCKER_PASSWORD = credentials('DOCKER_PASSWORD')
+    //DOCKER_ID = credentials('DOCKER_ID')
+    //DOCKER_PASSWORD = credentials('DOCKER_PASSWORD')
   }
 
   agent any
@@ -28,7 +28,7 @@ pipeline {
     stage('Build image') {
       steps{
         script {
-          dockerImage = docker.build "${dockerimagename}:${env.BRANCH_NAME}"
+          dockerImage = docker.build "${dockerimagename}"
         }
       }
     }
@@ -40,19 +40,19 @@ pipeline {
       steps{
         script {
           docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-            dockerImage.push("latest")
+            dockerImage.push(env.BRANCH_NAME)
           }
         }
       }
     }
 
-    stage('Deploying React.js container to Kubernetes') {
-      steps {
-        script {
-          kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
-        }
-      }
-    }
+    //stage('Deploying React.js container to Kubernetes') {
+    //  steps {
+    //    script {
+    //      kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
+    //    }
+    // }
+    //}
 
   }
 
