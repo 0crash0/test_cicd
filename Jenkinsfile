@@ -2,6 +2,7 @@ pipeline {
 
   environment {
     dockerimagename = "0crash0/testdepl"
+    registryCredential = 'dockerhub-credentials'
     dockerImage = ""
     //DOCKER_ID = credentials('DOCKER_ID')
     //DOCKER_PASSWORD = credentials('DOCKER_PASSWORD')
