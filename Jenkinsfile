@@ -30,7 +30,7 @@ pipeline {
       steps{
         //script {
           //dockerImage = docker.build "${dockerimagename}"
-          sh docker -t "${dockerimagename}:${env.BRANCH_NAME}" build .
+          sh 'docker -t ${dockerimagename}:${env.BRANCH_NAME} build .'
         //}
       }
     }
