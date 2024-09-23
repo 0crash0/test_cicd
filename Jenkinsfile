@@ -34,18 +34,18 @@ pipeline {
       }
     }
 
-    stage('Pushing Image') {
-      environment {
-               registryCredential = 'dockerhub-credentials'
-           }
-      steps{
-        script {
-          docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-            dockerImage.push(env.BRANCH_NAME)
-          }
-        }
-      }
-    }
+    //stage('Pushing Image') {
+    //  environment {
+    //           registryCredential = 'dockerhub-credentials'
+    //       }
+    //  steps{
+    //    script {
+    //      docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
+    //        dockerImage.push(env.BRANCH_NAME)
+    //      }
+    //    }
+    //  }
+    //}
 
     //stage('Deploying React.js container to Kubernetes') {
     //  steps {
