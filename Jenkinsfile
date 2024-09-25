@@ -23,6 +23,7 @@ pipeline {
       steps {
         echo env.BRANCH_NAME
         git 'https://github.com/0crash0/test_cicd.git'
+        sh 'ls -la'
       }
     }
 
