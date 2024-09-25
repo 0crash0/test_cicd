@@ -66,7 +66,12 @@ pipeline {
     stage('Integrate Remote k8s with Jenkins ') {
           steps {
 
-               withKubeConfig( credentialsId: 'kube_just_cert') {
+                withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
+                    // some block
+
+
+              //withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'demo1', contextName: '', credentialsId: 'SECRET_TOKEN', namespace: 'default', serverUrl: '']]) {
+              //withCredentials([usernamePassword(credentialsId:env.kubeCredential,passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
                   sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
                   sh 'chmod u+x ./kubectl'
                   sh './kubectl get nodes'
