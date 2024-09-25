@@ -2,7 +2,7 @@ pipeline {
 
   environment {
     dockerimagename = "0crash0/testdepl"
-    registryCredential = 'dockerhub-credentials'
+    registryCredentials = 'dockerhub'
     dockerImage = ""
     //DOCKER_ID = credentials('DOCKER_ID')
     //DOCKER_PASSWORD = credentials('DOCKER_PASSWORD')
@@ -16,7 +16,10 @@ pipeline {
                  echo 'Initializing..'
                  echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
                  echo "Current branch: ${env.BRANCH_NAME}"
-                 //sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_ID --password-stdin'
+                 /*withCredentials([usernamePassword(credentialsId:env.registryCredential,passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
+                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                 }*/
+
              }
     }
     stage('Checkout Source') {
@@ -35,18 +38,15 @@ pipeline {
       }
     }
 
-    //stage('Pushing Image') {
-    //  environment {
-    //           registryCredential = 'dockerhub-credentials'
-    //       }
-    //  steps{
-    //    script {
-    //      docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-    //        dockerImage.push(env.BRANCH_NAME)
-    //      }
-    //    }
-    //  }
-    //}
+    stage('Pushing Image') {
+      steps{
+        script {
+          docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
+            dockerImage.push(env.BRANCH_NAME)
+          }
+        }
+      }
+    }
 
     //stage('Deploying React.js container to Kubernetes') {
     //  steps {
