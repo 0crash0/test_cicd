@@ -33,7 +33,7 @@ pipeline {
     stage('Build image') {
       steps{
         script {
-          dockerImage = docker.build "${dockerimagename}"
+          dockerImage = docker.build "${dockerimagename}:${env.BRANCH_NAME}"
         }
       }
     }
@@ -42,7 +42,7 @@ pipeline {
       steps{
         script {
           docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-            dockerImage.push(env.BRANCH_NAME)
+            dockerImage.push(dockerImage)
           }
         }
       }
