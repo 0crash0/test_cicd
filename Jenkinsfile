@@ -16,7 +16,7 @@ pipeline {
                  echo 'Initializing..'
                  echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
                  echo "Current branch: ${env.BRANCH_NAME}"
-                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_ID --password-stdin'
+                 //sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_ID --password-stdin'
              }
     }
     stage('Checkout Source') {
@@ -27,14 +27,14 @@ pipeline {
       }
     }
 
-    /*stage('Build image') {
+    stage('Build image') {
       steps{
         script {
           dockerImage = docker.build "${dockerimagename}"
         }
       }
     }
-*/
+
     //stage('Pushing Image') {
     //  environment {
     //           registryCredential = 'dockerhub-credentials'
