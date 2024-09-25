@@ -52,7 +52,7 @@ pipeline {
     }
     stage('Deploy to Cluster') {
       steps {
-        sh 'envsubst < ${WORKSPACE}/Deployment.yaml | echo -'
+        sh 'envsubst < Deployment.yaml | echo -'
       }
     }
     /*stage('Deploying React.js container to Kubernetes') {
