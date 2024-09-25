@@ -85,14 +85,14 @@ pipeline {
               9S/rSrdcrhx/+dqaHnABi0jZ+3rHMP8F32Ba22TJmS0BY9y0yUy+Hs/+Dr7QUzQK
               TaRxjPuDFDmnF1M/6hPk9pLB4M+Yjpuq2KzBiBiAO8TpYVrJMUMyLT2cU0FaLJhO
               DfuEiKloZa7BiJwDNq1pGA9iZg==
-              -----END CERTIFICATE-----''',
-              clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
+              -----END CERTIFICATE-----''', clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
+                  // some block
 
               //withCredentials([usernamePassword(credentialsId:env.kubeCredential,passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-              sh 'curl.exe -LO "https://dl.k8s.io/release/v1.31.0/bin/windows/amd64/kubectl.exe"'
-              sh 'chmod u+x ./kubectl'
-              sh './kubectl get nodes'
-    }
+                  sh 'curl.exe -LO "https://dl.k8s.io/release/v1.31.0/bin/windows/amd64/kubectl.exe"'
+                  sh 'chmod u+x ./kubectl'
+                  sh './kubectl get nodes'
+              }
           }
   }
 
