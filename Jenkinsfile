@@ -1,3 +1,5 @@
+def dockerImage
+
 pipeline {
 
   environment {
@@ -33,7 +35,7 @@ pipeline {
     stage('Build image') {
       steps{
         script {
-            def dockerImage = docker.build "${dockerimagename}:${env.BRANCH_NAME}"
+            dockerImage = docker.build "${dockerimagename}:${env.BRANCH_NAME}"
         }
       }
     }
