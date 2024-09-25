@@ -73,6 +73,7 @@ pipeline {
                   sh './kubectl get nodes'
               }
           }
+    }
   }
 
 }
