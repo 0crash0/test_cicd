@@ -90,7 +90,7 @@ pipeline {
 
               //withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'demo1', contextName: '', credentialsId: 'SECRET_TOKEN', namespace: 'default', serverUrl: '']]) {
               //withCredentials([usernamePassword(credentialsId:env.kubeCredential,passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/windows/amd64/kubectl.exe"'
+                  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
                   sh 'chmod u+x ./kubectl'
                   sh './kubectl get nodes'
               }
