@@ -2,7 +2,7 @@ pipeline {
 
   environment {
     dockerimagename = "0crash0/testdepl"
-    registryсredentials = 'dockerhub'
+    registryCredentials = 'dockerhub'
     //dockerImage = ""
     //DOCKER_ID = credentials('DOCKER_ID')
     //DOCKER_PASSWORD = credentials('DOCKER_PASSWORD')
@@ -41,8 +41,8 @@ pipeline {
     stage('Pushing Image') {
       steps{
         script {
-          //withDockerRegistry(credentialsId: 'registryсredentials', url: "https://myregistry") {
-          docker.withRegistry( 'https://registry.hub.docker.com', registryсredentials ) {
+          //withDockerRegistry(credentialsId: 'registryCredentials', url: "https://myregistry") {
+          docker.withRegistry( 'https://registry.hub.docker.com', registryCredentials ) {
             dockerImage.push()
           }
         }
