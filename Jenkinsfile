@@ -67,7 +67,7 @@ pipeline {
           steps {
 
               //withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'demo1', contextName: '', credentialsId: 'SECRET_TOKEN', namespace: 'default', serverUrl: '']]) {
-              withKubeConfig(caCertificate: '''-----BEGIN CERTIFICATE-----
+              /*withKubeConfig(caCertificate: '''-----BEGIN CERTIFICATE-----
               MIIDDzCCAfegAwIBAgIUaqnDgyvxbnSVZ31mWoIi45p4nhwwDQYJKoZIhvcNAQEL
               BQAwFzEVMBMGA1UEAwwMMTAuMTUyLjE4My4xMB4XDTI0MDkyMzA5MjIyN1oXDTM0
               MDkyMTA5MjIyN1owFzEVMBMGA1UEAwwMMTAuMTUyLjE4My4xMIIBIjANBgkqhkiG
@@ -87,8 +87,8 @@ pipeline {
               DfuEiKloZa7BiJwDNq1pGA9iZg==
               -----END CERTIFICATE-----''', clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
                   // some block
-
-              //withCredentials([usernamePassword(credentialsId:env.kubeCredential,passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
+*/
+              withCredentials([usernamePassword(credentialsId:env.kubeCredential,passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
                   sh 'curl.exe -LO "https://dl.k8s.io/release/v1.31.0/bin/windows/amd64/kubectl.exe"'
                   sh 'chmod u+x ./kubectl'
                   sh './kubectl get nodes'
