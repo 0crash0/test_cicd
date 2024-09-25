@@ -9,7 +9,7 @@ pipeline {
   }
 
   agent any
-
+  def dockerImage
   stages {
     stage('Init') {
              steps {
@@ -43,7 +43,7 @@ pipeline {
         script {
           //withDockerRegistry(credentialsId: 'registrycredentials', url: "https://myregistry") {
           docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-            dockerImage.push(env.BRANCH_NAME)
+            dockerImage.push()
           }
         }
       }
