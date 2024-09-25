@@ -198,7 +198,7 @@ spec:
       initContainers:
         - name: init-service
           #image: alpine
-          image: 0crash0/testdepl:${BRANCH_NAME}
+          image: ${dockerimagename}:${BRANCH_NAME}
           command: ["sh", "-c"]
           args:
             - |
