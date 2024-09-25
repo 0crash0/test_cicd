@@ -9,56 +9,55 @@ pipeline {
   }
 
   agent any
-  node {
 
-      def dockerImage
-      stages {
-        stage('Init') {
-                 steps {
-                     echo 'Initializing..'
-                     echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-                     echo "Current branch: ${env.BRANCH_NAME}"
-                     /*withCredentials([usernamePassword(credentialsId:env.registryCredential,passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                        sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                     }*/
+  stages {
+    def dockerImage
+    stage('Init') {
+             steps {
+                 echo 'Initializing..'
+                 echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+                 echo "Current branch: ${env.BRANCH_NAME}"
+                 /*withCredentials([usernamePassword(credentialsId:env.registryCredential,passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
+                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                 }*/
 
-                 }
-        }
-        stage('Checkout Source') {
-          steps {
-            echo env.BRANCH_NAME
-            //git  'https://github.com/0crash0/test_cicd.git'
-            sh 'ls -la'
-          }
-        }
-
-        stage('Build image') {
-          steps{
-            script {
-              dockerImage = docker.build "${dockerimagename}:${env.BRANCH_NAME}"
-            }
-          }
-        }
-
-        stage('Pushing Image') {
-          steps{
-            script {
-              //withDockerRegistry(credentialsId: 'registrycredentials', url: "https://myregistry") {
-              docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-                dockerImage.push()
-              }
-            }
-          }
-        }
-
-        //stage('Deploying React.js container to Kubernetes') {
-        //  steps {
-        //    script {
-        //      kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
-        //    }
-        // }
-        //}
+             }
+    }
+    stage('Checkout Source') {
+      steps {
+        echo env.BRANCH_NAME
+        //git  'https://github.com/0crash0/test_cicd.git'
+        sh 'ls -la'
       }
+    }
+
+    stage('Build image') {
+      steps{
+        script {
+          dockerImage = docker.build "${dockerimagename}:${env.BRANCH_NAME}"
+        }
+      }
+    }
+
+    stage('Pushing Image') {
+      steps{
+        script {
+          //withDockerRegistry(credentialsId: 'registrycredentials', url: "https://myregistry") {
+          docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+
+    //stage('Deploying React.js container to Kubernetes') {
+    //  steps {
+    //    script {
+    //      kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
+    //    }
+    // }
+    //}
+
   }
 
 }
