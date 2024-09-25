@@ -11,7 +11,6 @@ pipeline {
   agent any
 
   stages {
-    def dockerImage
     stage('Init') {
              steps {
                  echo 'Initializing..'
@@ -34,7 +33,7 @@ pipeline {
     stage('Build image') {
       steps{
         script {
-          dockerImage = docker.build "${dockerimagename}:${env.BRANCH_NAME}"
+            def dockerImage = docker.build "${dockerimagename}:${env.BRANCH_NAME}"
         }
       }
     }
