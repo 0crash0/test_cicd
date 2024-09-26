@@ -67,8 +67,8 @@ pipeline {
           steps {
 
                 withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
-                  //sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
-                  //sh 'chmod u+x ./kubectl'
+                  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
+                  sh 'chmod u+x ./kubectl'
                   sh './kubectl get nodes'
                   sh 'envsubst \'${BRANCH_NAME} ${dockerimagename}\' < Deployment.yml | ./kubectl apply -f -'
               }
