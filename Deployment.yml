@@ -22,7 +22,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/home/pi/docker_phpfpm/www-${BRANCH_NAME}"
+    path: "/var/www-${BRANCH_NAME}"
 
 
 ---
@@ -207,9 +207,9 @@ spec:
 
           #    git clone https://github.com/ElfQrin/webservertest.git /usr/share/nginx/html
             #command: ['sh', '-c', "until nslookup service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for service; sleep 2; done"]
-      #    volumeMounts:
-      #      - name: nginx-fpm-data
-      #        mountPath: /usr/share/nginx/html
+          volumeMounts:
+            - name: nginx-fpm-data
+              mountPath: /usr/share/nginx/html
       containers:
         - name: nginx
           image: nginx:stable-alpine3.20
