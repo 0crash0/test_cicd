@@ -3,9 +3,9 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: nginx-fpm-$BRANCH_NAME
+  name: nginx-fpm-${BRANCH_NAME}
   labels:
-    name: nginx-fpm-$BRANCH_NAME
+    name: nginx-fpm-${BRANCH_NAME}
 
 
 ---
@@ -14,15 +14,15 @@ metadata:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nginx-fpm-$BRANCH_NAME-pv
-  namespace: nginx-fpm-$BRANCH_NAME
+  name: nginx-fpm-${BRANCH_NAME}-pv
+  namespace: nginx-fpm-${BRANCH_NAME}
 spec:
   capacity:
     storage: 10Gi
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/var/www-$BRANCH_NAME"
+    path: "/var/www-${BRANCH_NAME}"
 
 
 ---
@@ -31,8 +31,8 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nginx-fpm-$BRANCH_NAME-pvc
-  namespace: nginx-fpm-$BRANCH_NAME
+  name: nginx-fpm-${BRANCH_NAME}-pvc
+  namespace: nginx-fpm-${BRANCH_NAME}
 spec:
   accessModes:
     - ReadWriteMany
@@ -48,7 +48,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: nginx-config
-  namespace: nginx-fpm-$BRANCH_NAME
+  namespace: nginx-fpm-${BRANCH_NAME}
 data:
   nginx.conf: |
     #user www-data;
@@ -182,7 +182,7 @@ metadata:
   labels:
     app: nginx
     layer: frontend
-  namespace: nginx-fpm-$BRANCH_NAME
+  namespace: nginx-fpm-${BRANCH_NAME}
 spec:
   replicas: 1
   strategy:
@@ -198,7 +198,7 @@ spec:
       initContainers:
         - name: init-service
           #image: alpine
-          image: ${dockerimagename}:$BRANCH_NAME
+          image: ${dockerimagename}:${BRANCH_NAME}
           command: ["sh", "-c"]
           args:
             - |
@@ -251,7 +251,7 @@ spec:
         #    type: Directory
         - name: nginx-fpm-data
           persistentVolumeClaim:
-            claimName: nginx-fpm-$BRANCH_NAME-pvc
+            claimName: nginx-fpm-${BRANCH_NAME}-pvc
         - name: nginx-config 
           configMap: 
             name: nginx-config
@@ -266,7 +266,7 @@ metadata:
   labels:
     app: nginx
     layer: frontend
-  namespace: nginx-fpm-$BRANCH_NAME
+  namespace: nginx-fpm-${BRANCH_NAME}
 spec:
   type: ClusterIP
   selector:
@@ -288,7 +288,7 @@ metadata:
   labels:
     app: phpfpm
     layer: backend
-  namespace: nginx-fpm-$BRANCH_NAME
+  namespace: nginx-fpm-${BRANCH_NAME}
 spec:
   replicas: 1
   strategy:
@@ -325,7 +325,7 @@ spec:
       volumes:
         - name: nginx-fpm-data
           persistentVolumeClaim:
-            claimName: nginx-fpm-$BRANCH_NAME-pvc
+            claimName: nginx-fpm-${BRANCH_NAME}-pvc
 
 
 ---
@@ -334,7 +334,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: php-horiz-scaler
-  namespace: nginx-fpm-$BRANCH_NAME
+  namespace: nginx-fpm-${BRANCH_NAME}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -360,7 +360,7 @@ metadata:
   labels:
     app: phpfpm
     layer: backend
-  namespace: nginx-fpm-$BRANCH_NAME
+  namespace: nginx-fpm-${BRANCH_NAME}
 spec:
   ports:
     - port: 9000
@@ -375,7 +375,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nginx-fpm-ing
-  namespace: nginx-fpm-$BRANCH_NAME
+  namespace: nginx-fpm-${BRANCH_NAME}
 spec:
   defaultBackend:
     service:
@@ -383,7 +383,7 @@ spec:
       port:
         number: 80
   rules:
-    - host: test-$BRANCH_NAME.samo.ru
+    - host: test-${BRANCH_NAME}.samo.ru
       http:
         paths:
           - path: /
