@@ -71,7 +71,7 @@ pipeline {
                   sh 'chmod u+x ./kubectl'
                   sh './kubectl apply -f ConfigMap.yml'
                   sh './kubectl get nodes'
-                  sh 'envsubst < Deployment.yml | ./kubectl apply -f -'
+                  sh 'envsubst "$BRANCH_NAME" < Deployment.yml | ./kubectl apply -f -'
               }
           }
     }
