@@ -202,7 +202,7 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              rm -rf /usr/share/nginx/html/* && cp -R /var/www/html/ /usr/share/nginx/html/
+              rm -rf /usr/share/nginx/html/* && cp -R /var/www/html/. /usr/share/nginx/html/
           #    svn export --non-interactive --no-auth-cache --username "saprinap" --password "Cfvjcjan2024" "http://redmine.mow.samo.ru/svn/incoming.online/_client/sayama/api-incoming/" --depth "infinity" /usr/share/nginx/html/api-incoming/
 
           #    git clone https://github.com/ElfQrin/webservertest.git /usr/share/nginx/html
