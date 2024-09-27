@@ -99,10 +99,10 @@ pipeline {
 						  sh './kubectl get nodes'
 						  sh 'envsubst \'${BRANCH_NAME} ${dockerimagename}\' < Deployment.yml | ./kubectl apply -f -'
 						}
+					} else {
+						sh 'echo Deploy to kubernetes is canceled'
 					}
-				} else {
-					sh 'echo Deploy to kubernetes is canceled'
-				}
+				} 
 			  }
 	}
   }
