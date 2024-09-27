@@ -86,8 +86,9 @@ pipeline {
 
      }
     }*/
-	if(inputDeploy){
-		stage('Integrate Remote k8s with Jenkins ') {
+	
+	stage('Integrate Remote k8s with Jenkins ') {
+		if(inputDeploy){
 			  steps {
 					withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
 					  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
@@ -96,13 +97,10 @@ pipeline {
 					  sh 'envsubst \'${BRANCH_NAME} ${dockerimagename}\' < Deployment.yml | ./kubectl apply -f -'
 				  }
 			  }
-		}
-	}
-	else{
-		stage('Deploy is canceled') {
-				  steps {
-					sh 'echo Deploy to kubernetes is canceled'
-				  }
+		} else {
+			steps {
+				sh 'echo Deploy to kubernetes is canceled'
+			}
 		}
 	}
   }
