@@ -35,17 +35,12 @@ pipeline {
 
                     // Get the input
                     def userInput = input(
-                            id: 'userInput', message: 'Enter path of test reports:?',
+                            id: 'userInput', message: 'What we are going to do:?',
                             parameters: [
 								[$class: 'ChoiceParameterDefinition',
 								 choices: ['no','yes'].join('\n'),
 								 name: 'input',
-								 description: 'Menu - select box option'],
-								booleanParam(
-									name: 'Deploy',
-									defaultValue: true,
-									description: 'Deploy it to kubernetes?'
-								),
+								 description: 'Deploy it to kubernetes?'],
                             ])
 
                     // Save to variables. Default to empty string if not found.
