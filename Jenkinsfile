@@ -37,6 +37,10 @@ pipeline {
                     def userInput = input(
                             id: 'userInput', message: 'Enter path of test reports:?',
                             parameters: [
+								[$class: 'ChoiceParameterDefinition',
+								 choices: ['no','yes'].join('\n'),
+								 name: 'input',
+								 description: 'Menu - select box option'],
 								booleanParam(
 									name: 'Deploy',
 									defaultValue: true,
@@ -45,7 +49,7 @@ pipeline {
                             ])
 
                     // Save to variables. Default to empty string if not found.
-                    inputDeploy = userInput.Deploy
+                    inputDeploy = userInput.input
                 }
             }
     }
@@ -93,7 +97,7 @@ pipeline {
 			  steps {
 				script {
 					//if(params.Deploy == true){
-					if(inputDeploy == true){
+					if(inputDeploy){
 						sh "echo 'Deploy to kubernetes is started!'"
 						withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
 						  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
