@@ -25,6 +25,29 @@ pipeline {
 
              }
     }
+	stage("Choose what to do") {
+            steps {
+                script {
+
+                    // Variables for input
+                    def inputDeploy
+
+                    // Get the input
+                    def userInput = input(
+                            id: 'userInput', message: 'Enter path of test reports:?',
+                            parameters: [
+								booleanParam(
+									name: 'Deploy',
+									defaultValue: true,
+									description: 'Deploy it to kubernetes?'
+								),
+                            ])
+
+                    // Save to variables. Default to empty string if not found.
+                    inputDeploy = userInput.Deploy?:''
+                }
+            }
+    }
     stage('Checkout Source') {
       steps {
         echo env.BRANCH_NAME
@@ -63,17 +86,25 @@ pipeline {
 
      }
     }*/
-    stage('Integrate Remote k8s with Jenkins ') {
-          steps {
-
-                withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
-                  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
-                  sh 'chmod u+x ./kubectl'
-                  sh './kubectl get nodes'
-                  sh 'envsubst \'${BRANCH_NAME} ${dockerimagename}\' < Deployment.yml | ./kubectl apply -f -'
-              }
-          }
-    }
+	if(inputDeploy){
+		stage('Integrate Remote k8s with Jenkins ') {
+			  steps {
+					withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
+					  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
+					  sh 'chmod u+x ./kubectl'
+					  sh './kubectl get nodes'
+					  sh 'envsubst \'${BRANCH_NAME} ${dockerimagename}\' < Deployment.yml | ./kubectl apply -f -'
+				  }
+			  }
+		}
+	}
+	else{
+		stage('Deploy is canceled') {
+				  steps {
+					sh 'echo Deploy to kubernetes is canceled'
+				  }
+		}
+	}
   }
 
 }
