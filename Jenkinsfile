@@ -96,8 +96,8 @@ pipeline {
 		
 			  steps {
 				script {
-					//if(params.Deploy == true){
-					if(inputDeploy){
+					//if(params.Deploy == "yes"){
+					if(inputDeploy== "yes"){
 						sh "echo 'Deploy to kubernetes is started!'"
 						withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
 						  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
