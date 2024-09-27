@@ -1,4 +1,6 @@
 def dockerImage
+// Variables for input
+def inputDeploy
 
 pipeline {
 
@@ -28,9 +30,6 @@ pipeline {
 	stage("Choose what to do") {
             steps {
                 script {
-
-                    // Variables for input
-                    def inputDeploy
 
                     // Get the input
                     def userInput = input(
