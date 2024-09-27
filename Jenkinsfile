@@ -12,9 +12,9 @@ pipeline {
     //DOCKER_ID = credentials('DOCKER_ID')
     //DOCKER_PASSWORD = credentials('DOCKER_PASSWORD')
   }
-  parameters {
+  /*parameters {
         booleanParam(name: 'Deploy', defaultValue: false, description: 'Set to true to Deploy to kubernetes')
-  }
+  }*/
   agent any
 
   stages {
@@ -29,7 +29,7 @@ pipeline {
 
              }
     }
-	/*stage("Choose what to do") {
+	stage("Choose what to do") {
             steps {
                 script {
 
@@ -45,10 +45,10 @@ pipeline {
                             ])
 
                     // Save to variables. Default to empty string if not found.
-                    inputDeploy = userInput.Deploy?:''
+                    inputDeploy = userInput.Deploy
                 }
             }
-    }*/
+    }
     stage('Checkout Source') {
       steps {
         echo env.BRANCH_NAME
@@ -92,7 +92,8 @@ pipeline {
 		
 			  steps {
 				script {
-					if(params.Deploy == true){
+					//if(params.Deploy == true){
+					if(inputDeploy == true){
 						sh "echo 'Deploy to kubernetes is started!'"
 						withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
 						  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
