@@ -1,0 +1,61 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage("Interactive_Input") {
+            steps {
+                sh 'echo $(env)'
+                telegramSend(message: 'Choose required', chatId: 389929520)
+                script {
+
+                    // Variables for input
+                    def inputConfig
+                    def inputTest
+
+                    // Get the input
+                    def userInput = input(
+                            id: 'userInput', message: 'Branch $SOURCE_BRANCH_NAME is deleted are we remove it from kuber?',
+                            parameters: [
+
+                                    string(defaultValue: 'None',
+                                            description: 'Path of config file',
+                                            name: 'Config'),
+                                    string(defaultValue: 'None',
+                                            description: 'Test Info file',
+                                            name: 'Test'),
+                            ])
+
+                    // Save to variables. Default to empty string if not found.
+                    inputConfig = userInput.Config?:''
+                    inputTest = userInput.Test?:''
+
+                    // Echo to console
+                    echo("IQA Sheet Path: ${inputConfig}")
+                    echo("Test Info file path: ${inputTest}")
+
+                    // Write to file
+                    //writeFile file: "inputData.txt", text: "Config=${inputConfig}\r\nTest=${inputTest}"
+
+                    // Archive the file (or whatever you want to do with it)
+                    //archiveArtifacts 'inputData.txt'
+                }
+
+
+            }
+        }
+    }
+    post{
+          success{
+               telegramSend(message: 'Hello World', chatId: 389929520)
+          }
+          failure{
+               telegramSend(message: 'Hello World', chatId: 389929520)
+          }
+          aborted{
+               telegramSend(message: 'Hello World', chatId: 389929520)
+          }
+
+  }
+}
