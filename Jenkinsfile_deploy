@@ -47,8 +47,9 @@ pipeline {
                       //currentBuild.result = 'ABORTED'
                         catchError(buildResult: 'ABORTED', stageResult: 'ABORTED') {
                             error("Build skipped due to [cicd skip] tag in commit message")
-                            build.doTerm()
+                            
                         }
+                        currentBuild.doTerm()
                     }
                 }
             }
