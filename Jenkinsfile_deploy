@@ -16,9 +16,9 @@ pipeline {
     TELEGRAM_CHAT_ID = 389929520 // change this line with your credential id for Telegram bot chat id
 
     TEXT_PRE_BUILD = "Jenkins is building ${JOB_NAME}"
-    TEXT_SUCCESS_BUILD = "${JOB_NAME} is Success"
-    TEXT_FAILURE_BUILD = "${JOB_NAME} is Failure"
-    TEXT_ABORTED_BUILD = "${JOB_NAME} is Aborted"
+    TEXT_SUCCESS_BUILD = "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} -- ${JOB_NAME} is Success"
+    TEXT_FAILURE_BUILD = "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} -- ${JOB_NAME} is Failure"
+    TEXT_ABORTED_BUILD = "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} -- ${JOB_NAME} is Aborted"
   }
   /*parameters {
         booleanParam(name: 'Deploy', defaultValue: false, description: 'Set to true to Deploy to kubernetes')
@@ -130,19 +130,19 @@ pipeline {
           success{
               script {
                 telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is SUCCESS" , chatId: ${env.TELEGRAM_CHAT_ID})
-                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is SUCCESS'"
+                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_SUCCESS_BUILD}'"
               }
           }
           failure{
               script {
                 telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is FAILED", chatId: ${env.TELEGRAM_CHAT_ID})
-                  //bat ''' curl -s -X POST https://api.telegram.org/bot"%TELEGRAM_TOKEN%"/sendMessage -d chat_id="%TELEGRAM_CHAT_ID%" -d text="%TEXT_FAILURE_BUILD%" '''
+                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_FAILURE_BUILD}'"
               }
           }
           aborted{
               script {
                 telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is ABORTED", chatId: ${env.TELEGRAM_CHAT_ID})
-                  sh ''' curl -s -X POST https://api.telegram.org/bot"$env.TELEGRAM_TOKEN"/sendMessage -d chat_id="$TELEGRAM_CHAT_ID" -d text="$TEXT_ABORTED_BUILD" '''
+                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_ABORTED_BUILD}'"
               }
           }
 
