@@ -16,7 +16,7 @@ pipeline {
 
                     // Get the input
                     def userInput = input(
-                            id: 'userInput', message: 'Branch $SOURCE_BRANCH_NAME is deleted are we remove it from kuber?',
+                            id: 'userInput', message: 'Branch ${SOURCE_BRANCH_NAME} is deleted are we remove it from kuber?',
                             parameters: [
 
                                     string(defaultValue: 'None',
