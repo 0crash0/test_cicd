@@ -1,6 +1,7 @@
 def dockerImage
 // Variables for input
 def inputDeploy
+def inputPushDocker
 
 pipeline {
 
@@ -11,6 +12,13 @@ pipeline {
     //dockerImage = ""
     //DOCKER_ID = credentials('DOCKER_ID')
     //DOCKER_PASSWORD = credentials('DOCKER_PASSWORD')
+    TELEGRAM_TOKEN = credentials('telegram-token') // change this line with your credential id for Telegram bot access token
+    TELEGRAM_CHAT_ID = 389929520 // change this line with your credential id for Telegram bot chat id
+
+    TEXT_PRE_BUILD = "Jenkins is building ${JOB_NAME}"
+    TEXT_SUCCESS_BUILD = "${JOB_NAME} is Success"
+    TEXT_FAILURE_BUILD = "${JOB_NAME} is Failure"
+    TEXT_ABORTED_BUILD = "${JOB_NAME} is Aborted"
   }
   /*parameters {
         booleanParam(name: 'Deploy', defaultValue: false, description: 'Set to true to Deploy to kubernetes')
@@ -38,18 +46,28 @@ pipeline {
                             id: 'userInput', message: 'Enter path of test reports:?',
                             parameters: [
 								[$class: 'ChoiceParameterDefinition',
-								 choices: ['no','yes'].join('\n'),
-								 name: 'input',
-								 description: 'Menu - select box option'],
-								booleanParam(
-									name: 'Deploy',
-									defaultValue: true,
-									description: 'Deploy it to kubernetes?'
+                                    choices: ['no','yes'].join('\n'),
+                                    name: 'input',
+                                    description: 'Menu - select box option'],
+                                    booleanParam(
+                                        name: 'Push',
+                                        defaultValue: true,
+                                        description: 'Push it to docker?'
 								),
+								/*[$class: 'ChoiceParameterDefinition',
+                                    choices: ['no','yes'].join('\n'),
+                                    name: 'input',
+                                    description: 'Menu - select box option'],
+                                    booleanParam(
+                                        name: 'Deploy',
+                                        defaultValue: true,
+                                        description: 'Deploy it to kubernetes?'
+                                ),*/
                             ])
 
                     // Save to variables. Default to empty string if not found.
                     inputDeploy = userInput.input
+                    //inputPushDocker = userInput.input
                 }
             }
     }
@@ -113,5 +131,25 @@ pipeline {
 			  }
 	}
   }
+  post{
+          success{
+              script {
+                telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is SUCCESS" , chatId: ${env.TELEGRAM_CHAT_ID})
+                  //bat ''' curl -s -X POST https://api.telegram.org/bot"%TELEGRAM_TOKEN%"/sendMessage -d chat_id="%TELEGRAM_CHAT_ID%" -d text="%TEXT_SUCCESS_BUILD%" '''
+              }
+          }
+          failure{
+              script {
+                telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is FAILED", chatId: ${env.TELEGRAM_CHAT_ID})
+                  //bat ''' curl -s -X POST https://api.telegram.org/bot"%TELEGRAM_TOKEN%"/sendMessage -d chat_id="%TELEGRAM_CHAT_ID%" -d text="%TEXT_FAILURE_BUILD%" '''
+              }
+          }
+          aborted{
+              script {
+                telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is ABORTED", chatId: ${env.TELEGRAM_CHAT_ID})
+                  //bat ''' curl -s -X POST https://api.telegram.org/bot"%TELEGRAM_TOKEN%"/sendMessage -d chat_id="%TELEGRAM_CHAT_ID%" -d text="%TEXT_ABORTED_BUILD%" '''
+              }
+          }
 
+  }
 }
