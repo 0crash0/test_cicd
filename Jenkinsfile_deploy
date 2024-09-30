@@ -141,7 +141,7 @@ pipeline {
 }
   post{
           always{
-            telegramSend(message:'${PROJECT_NAME}:${BUILD_STATUS}',chatId:'${env.TELEGRAM_CHAT_ID}')
+            telegramSend(message:'${PROJECT_NAME}:${BUILD_STATUS}',chatId: env.TELEGRAM_CHAT_ID)
           }
           success{
               script {
