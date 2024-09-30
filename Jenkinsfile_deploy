@@ -45,9 +45,10 @@ pipeline {
                     echo "Latest commit message: ${commitMessage}"
 
                     if (commitMessage.contains("[cicd skip]")) {
-                        catchError(buildResult: 'ABORTED', stageResult: 'ABORTED') {
+                      currentBuild.result = 'ABORTED'
+                        //catchError(buildResult: 'ABORTED', stageResult: 'ABORTED') {
                             error("Build skipped due to [cicd skip] tag in commit message")
-                        }
+                        //}
                         
                     }
                 }
