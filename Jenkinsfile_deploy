@@ -47,27 +47,23 @@ pipeline {
                             parameters: [
 								[$class: 'ChoiceParameterDefinition',
                                     choices: ['no','yes'].join('\n'),
-                                    name: 'input',
+                                    name: 'inputDepl',
                                     description: 'Menu - select box option'],
                                     booleanParam(
                                         name: 'Push',
                                         defaultValue: true,
                                         description: 'Push it to docker?'
 								),
-								/*[$class: 'ChoiceParameterDefinition',
+								[$class: 'ChoiceParameterDefinition',
                                     choices: ['no','yes'].join('\n'),
-                                    name: 'input',
+                                    name: 'inputDocker',
                                     description: 'Menu - select box option'],
-                                    booleanParam(
-                                        name: 'Deploy',
-                                        defaultValue: true,
-                                        description: 'Deploy it to kubernetes?'
-                                ),*/
+
                             ])
 
                     // Save to variables. Default to empty string if not found.
-                    inputDeploy = userInput.input
-                    //inputPushDocker = userInput.input
+                    inputDeploy = userInput.inputDepl
+                    inputPushDocker = userInput.inputDocker
                 }
             }
     }

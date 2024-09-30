@@ -34,11 +34,17 @@ pipeline {
                                     string(defaultValue: 'None',
                                             description: 'Test Info file',
                                             name: 'Test'),
+                                    [$class: 'ChoiceParameterDefinition',
+                                                                        choices: ['no','yes'].join('\n'),
+                                                                        name: 'inputRemove',
+                                                                        description: 'Remove namespace?'],
                             ])
 
                     // Save to variables. Default to empty string if not found.
                     inputConfig = userInput.Config?:''
                     inputTest = userInput.Test?:''
+
+                    inputRemove = userInput.inputRemove
 
                     // Echo to console
                     echo("IQA Sheet Path: ${inputConfig}")
@@ -54,6 +60,26 @@ pipeline {
 
             }
         }
+        stage('Integrate Remote k8s with Jenkins ') {
+
+        			  steps {
+        				script {
+        					//if(params.Deploy == "yes"){
+        					if(inputRemove== "yes"){
+        						sh "echo 'Deploy to kubernetes is started!'"
+        						withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
+        						  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
+        						  sh 'chmod u+x ./kubectl'
+        						  sh "./kubectl delete namespace nginx-fpm-${SOURCE_BRANCH_NAME} -f"
+        						}
+        						sh "echo 'nginx-fpm-${SOURCE_BRANCH_NAME} Removed!'"
+        					} else {
+        						sh "echo 'Removing is canceled!'"
+        					}
+        				}
+        			  }
+        	}
+          }
     }
     post{
           success{
