@@ -38,7 +38,7 @@ pipeline {
 
              }
     }
-    stage('Pre-Build Check') {
+    stage('Pre-Build Check') { //skip when there is [cicd skip] in commit message
             steps {
                 script {
                     commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
