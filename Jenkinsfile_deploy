@@ -1,6 +1,6 @@
 def dockerImage
 // Variables for input
-def inputDeploy
+def inputDeployKuber
 def inputPushDocker
 
 pipeline {
@@ -37,31 +37,31 @@ pipeline {
 
              }
     }
-	stage("Choose what to do") {
+	  stage("Choose what to do") {
             steps {
                 script {
 
                     // Get the input
                     def userInput = input(
-                            id: 'userInput', message: 'Enter path of test reports:?',
+                            id: 'userInput', message: 'What we are going to do:',
                             parameters: [
-								[$class: 'ChoiceParameterDefinition',
-                                    choices: ['no','yes'].join('\n'),
-                                    name: 'inputDepl',
-                                    description: 'Menu - select box option'],
-                                /*booleanParam(
-                                        name: 'Push',
-                                        defaultValue: true,
-                                        description: 'Push it to docker?'
-								),*/
-								[$class: 'ChoiceParameterDefinition',
-                                    choices: ['no','yes'].join('\n'),
-                                    name: 'inputDocker',
-                                    description: 'Menu - select box option'],
+                              [$class: 'ChoiceParameterDefinition',
+                                                  choices: ['no','yes'].join('\n'),
+                                                  name: 'inputKuber',
+                                                  description: 'Deploy to kubernetes?'],
+                                              /*booleanParam(
+                                                      name: 'Push',
+                                                      defaultValue: true,
+                                                      description: 'Push it to docker?'
+                                              ),*/
+                              [$class: 'ChoiceParameterDefinition',
+                                                  choices: ['no','yes'].join('\n'),
+                                                  name: 'inputDocker',
+                                                  description: 'Push to docker'],
                     ])
 
                     // Save to variables. Default to empty string if not found.
-                    inputDeploy = userInput.inputDepl
+                    inputDeployKuber = userInput.inputKuber
                     inputPushDocker = userInput.inputDocker
                 }
             }
@@ -105,27 +105,27 @@ pipeline {
      }
     }*/
 	
-	stage('Integrate Remote k8s with Jenkins ') {
+	  stage('Integrate Remote k8s with Jenkins ') {
 		
 			  steps {
-				script {
-					//if(params.Deploy == "yes"){
-					if(inputDeploy== "yes"){
-						sh "echo 'Deploy to kubernetes is started!'"
-						withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
-						  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
-						  sh 'chmod u+x ./kubectl'
-						  sh './kubectl get nodes'
-						  sh 'envsubst \'${BRANCH_NAME} ${dockerimagename}\' < Deployment.yml | ./kubectl apply -f -'
-						}
-						sh "echo 'Deploy to kubernetes is finished!'"
-					} else {
-						sh "echo 'Deploy to kubernetes is canceled!'"
-					}
-				} 
+          script {
+            //if(params.Deploy == "yes"){
+            if(inputDeployKuber== "yes"){
+              sh "echo 'Deploy to kubernetes is started!'"
+              withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
+                sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
+                sh 'chmod u+x ./kubectl'
+                sh './kubectl get nodes'
+                sh 'envsubst \'${BRANCH_NAME} ${dockerimagename}\' < Deployment.yml | ./kubectl apply -f -'
+              }
+              sh "echo 'Deploy to kubernetes is finished!'"
+            } else {
+              sh "echo 'Deploy to kubernetes is canceled!'"
+            }
+          } 
 			  }
-	}
-  }
+	  }
+}
   post{
           success{
               script {
