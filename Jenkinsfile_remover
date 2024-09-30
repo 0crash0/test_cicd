@@ -58,16 +58,16 @@ pipeline {
     post{
           success{
                //telegramSend(message: 'Hello World', chatId: 389929520)
-                  sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id=${env.TELEGRAM_CHAT_ID} -d text=${env.TEXT_SUCCESS_BUILD}"
+                  sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_SUCCESS_BUILD}'"
           }
-          failure{
+          /*failure{
                //telegramSend(message: 'Hello World', chatId: 389929520)
                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id=${env.TELEGRAM_CHAT_ID} -d text=${env.TEXT_SUCCESS_BUILD}"
           }
           aborted{
                //telegramSend(message: 'Hello World', chatId: 389929520)
               sh ''' curl -s -X POST https://api.telegram.org/bot"${env.TELEGRAM_TOKEN}"/sendMessage -d chat_id="$TELEGRAM_CHAT_ID" -d text="${env.TEXT_FAILURE_BUILD}" '''
-          }
+          }*/
 
   }
 }
