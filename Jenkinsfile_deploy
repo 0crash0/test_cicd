@@ -44,10 +44,11 @@ pipeline {
                     commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
                     echo "Latest commit message: ${commitMessage}"
                     if (commitMessage.contains("[cicd skip]")) {
-                      currentBuild.result = 'ABORTED'
-                        //catchError(buildResult: 'ABORTED', stageResult: 'ABORTED') {
+                      //currentBuild.result = 'ABORTED'
+                        catchError(buildResult: 'ABORTED', stageResult: 'ABORTED') {
                             error("Build skipped due to [cicd skip] tag in commit message")
-                        //}
+                            build.doTerm()
+                        }
                     }
                 }
             }
