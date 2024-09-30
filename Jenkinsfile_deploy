@@ -129,19 +129,19 @@ pipeline {
   post{
           success{
               script {
-                telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is SUCCESS" , chatId: ${env.TELEGRAM_CHAT_ID})
+                //telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is SUCCESS" , chatId: ${env.TELEGRAM_CHAT_ID})
                 sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_SUCCESS_BUILD}'"
               }
           }
           failure{
               script {
-                telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is FAILED", chatId: ${env.TELEGRAM_CHAT_ID})
+                //telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is FAILED", chatId: ${env.TELEGRAM_CHAT_ID})
                 sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_FAILURE_BUILD}'"
               }
           }
           aborted{
               script {
-                telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is ABORTED", chatId: ${env.TELEGRAM_CHAT_ID})
+                //telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is ABORTED", chatId: ${env.TELEGRAM_CHAT_ID})
                 sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_ABORTED_BUILD}'"
               }
           }
