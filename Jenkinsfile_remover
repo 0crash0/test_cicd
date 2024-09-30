@@ -28,6 +28,15 @@ pipeline {
                                     choices: ['no','yes'].join('\n'),
                                     name: 'inputRemove',
                                     description: 'Remove namespace?'],
+                                    booleanParam(
+                                                                            name: 'Push',
+                                                                            defaultValue: true,
+                                                                            description: 'Push it to docker?'
+                                    								),
+                                    								[$class: 'ChoiceParameterDefinition',
+                                                                        choices: ['no','yes'].join('\n'),
+                                                                        name: 'inputDocker',
+                                                                        description: 'Menu - select box option'],
                             ])
 
                     inputRemove = userInput.inputRemove

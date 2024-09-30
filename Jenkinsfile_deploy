@@ -49,7 +49,7 @@ pipeline {
                                     choices: ['no','yes'].join('\n'),
                                     name: 'inputDepl',
                                     description: 'Menu - select box option'],
-                                    booleanParam(
+                                booleanParam(
                                         name: 'Push',
                                         defaultValue: true,
                                         description: 'Push it to docker?'
@@ -58,8 +58,7 @@ pipeline {
                                     choices: ['no','yes'].join('\n'),
                                     name: 'inputDocker',
                                     description: 'Menu - select box option'],
-
-                            ])
+                    ])
 
                     // Save to variables. Default to empty string if not found.
                     inputDeploy = userInput.inputDepl
