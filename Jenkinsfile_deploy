@@ -16,7 +16,7 @@ pipeline {
     TELEGRAM_CHAT_ID = 389929520 // change this line with your credential id for Telegram bot chat id
 
     TEXT_PRE_BUILD = "Jenkins is building ${JOB_NAME}"
-    TEXT_SUCCESS_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} Current branch: ${env.BRANCH_NAME} -- is Success"
+    TEXT_SUCCESS_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} Current branch: ${env.BRANCH_NAME} -- is Success here is your URI: test-${env.BRANCH_NAME}.samo.ru"
     TEXT_FAILURE_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} Current branch: ${env.BRANCH_NAME} -- is Failure"
     TEXT_ABORTED_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} Current branch: ${env.BRANCH_NAME} -- is Aborted"
   }
