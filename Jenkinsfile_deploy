@@ -37,6 +37,18 @@ pipeline {
 
              }
     }
+    stage('Pre-Build Check') {
+            steps {
+                script {
+                    def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+                    echo "Latest commit message: ${commitMessage}"
+
+                    if (commitMessage.contains("[cicd skip]")) {
+                        error("Build skipped due to [cicd skip] tag in commit message")
+                    }
+                }
+            }
+    }
 	  stage("Choose what to do") {
             steps {
                 script {

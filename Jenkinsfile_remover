@@ -16,7 +16,7 @@ pipeline {
         TEXT_ABORTED_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} -- ${SOURCE_BRANCH_NAME} deletion is Aborted"
     }
     stages {
-
+        
         stage("Interactive_Input") {
             steps {
                 //sh 'echo $(env)'
