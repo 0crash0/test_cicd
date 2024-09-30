@@ -143,19 +143,19 @@ pipeline {
           success{
               script {
                 //telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is SUCCESS" , chatId: ${env.TELEGRAM_CHAT_ID})
-                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_SUCCESS_BUILD} commit message: ${commitMessage}'"
+                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d parse_mode=markdown -d text='${env.TEXT_SUCCESS_BUILD} commit message: ${commitMessage}'"
               }
           }
           failure{
               script {
                 //telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is FAILED", chatId: ${env.TELEGRAM_CHAT_ID})
-                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_FAILURE_BUILD} ERROR MESSAGE: ${env.BUILD_FAILED_MESSAGE} commit message: ||${commitMessage}||'"
+                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d parse_mode=markdown  -d text='${env.TEXT_FAILURE_BUILD} ERROR MESSAGE: ${env.BUILD_FAILED_MESSAGE} commit message: ||${commitMessage}||'"
               }
           }
           aborted{
               script {
                 //telegramSend(message: "Build ${env.BUILD_ID} on ${env.JENKINS_URL} Current branch: ${env.BRANCH_NAME} is ABORTED", chatId: ${env.TELEGRAM_CHAT_ID})
-                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_ABORTED_BUILD}'"
+                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d parse_mode=markdown -d text='${env.TEXT_ABORTED_BUILD}'"
               }
           }
 
