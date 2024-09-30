@@ -1,3 +1,5 @@
+def inputRemove
+
 pipeline {
 
     agent any
@@ -19,42 +21,17 @@ pipeline {
                 telegramSend(message: "Choose required", chatId: "${env.TELEGRAM_CHAT_ID}")
                 script {
 
-                    // Variables for input
-                    def inputConfig
-                    def inputTest
-
-                    // Get the input
                     def userInput = input(
                             id: 'userInput', message: "Branch ${SOURCE_BRANCH_NAME} is deleted are we remove it from kuber?",
                             parameters: [
-
-                                    string(defaultValue: 'None',
-                                            description: 'Path of config file',
-                                            name: 'Config'),
-                                    string(defaultValue: 'None',
-                                            description: 'Test Info file',
-                                            name: 'Test'),
                                     [$class: 'ChoiceParameterDefinition',
-                                                                        choices: ['no','yes'].join('\n'),
-                                                                        name: 'inputRemove',
-                                                                        description: 'Remove namespace?'],
+                                    choices: ['no','yes'].join('\n'),
+                                    name: 'inputRemove',
+                                    description: 'Remove namespace?'],
                             ])
-
-                    // Save to variables. Default to empty string if not found.
-                    inputConfig = userInput.Config?:''
-                    inputTest = userInput.Test?:''
 
                     inputRemove = userInput.inputRemove
 
-                    // Echo to console
-                    echo("IQA Sheet Path: ${inputConfig}")
-                    echo("Test Info file path: ${inputTest}")
-
-                    // Write to file
-                    //writeFile file: "inputData.txt", text: "Config=${inputConfig}\r\nTest=${inputTest}"
-
-                    // Archive the file (or whatever you want to do with it)
-                    //archiveArtifacts 'inputData.txt'
                 }
 
 
@@ -64,7 +41,7 @@ pipeline {
 
         			  steps {
         				script {
-        					//if(params.Deploy == "yes"){
+
         					if(inputRemove== "yes"){
         						sh "echo 'Deploy to kubernetes is started!'"
         						withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
@@ -79,7 +56,7 @@ pipeline {
         				}
         			  }
         	}
-          }
+        }
     }
     post{
           success{
