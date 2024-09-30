@@ -1,4 +1,5 @@
-def inputRemove
+def inputRemoveKuber
+def inputRemoveDocker
 
 pipeline {
 
@@ -10,9 +11,9 @@ pipeline {
 
         TEXT_PRE_BUILD = "Jenkins is building ${JOB_NAME}"
 
-        TEXT_SUCCESS_BUILD = "Build ${env.BUILD_ID} on ${env.JENKINS_URL}${JOB_NAME} -- ${SOURCE_BRANCH_NAME} is Deleted from kuber"
-        TEXT_FAILURE_BUILD = "Build ${env.BUILD_ID} on ${env.JENKINS_URL}${JOB_NAME} -- ${SOURCE_BRANCH_NAME} deletion is Failure"
-        TEXT_ABORTED_BUILD = "Build ${env.BUILD_ID} on ${env.JENKINS_URL}${JOB_NAME} -- ${SOURCE_BRANCH_NAME} deletion is Aborted"
+        TEXT_SUCCESS_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} -- ${SOURCE_BRANCH_NAME} is Deleted from kuber"
+        TEXT_FAILURE_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} -- ${SOURCE_BRANCH_NAME} deletion is Failure"
+        TEXT_ABORTED_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} -- ${SOURCE_BRANCH_NAME} deletion is Aborted"
     }
     stages {
 
@@ -27,32 +28,23 @@ pipeline {
                             parameters: [
                                     [$class: 'ChoiceParameterDefinition',
                                     choices: ['no','yes'].join('\n'),
-                                    name: 'inputRemove',
-                                    description: 'Remove namespace?'],
-                                    booleanParam(
-                                                                            name: 'Push',
-                                                                            defaultValue: true,
-                                                                            description: 'Push it to docker?'
-                                    								),
-                                    								[$class: 'ChoiceParameterDefinition',
-                                                                        choices: ['no','yes'].join('\n'),
-                                                                        name: 'inputDocker',
-                                                                        description: 'Menu - select box option'],
+                                    name: 'inputKuber',
+                                    description: 'Remove branch from kubernetes?'],
+                                    [$class: 'ChoiceParameterDefinition',
+                                     choices: ['no','yes'].join('\n'),
+                                     name: 'inputDocker',
+                                     description: 'Remove docker image from registry?'],
                             ])
 
-                    inputRemove = userInput.inputRemove
-
+                    inputRemoveKuber = userInput.inputKuber
+                    inputRemoveDocker = userInput.inputDocker
                 }
-
-
             }
         }
-        stage('Integrate Remote k8s with Jenkins ') {
-
+        stage('Removing from kubernetes') {
         			  steps {
         				script {
-
-        					if(inputRemove== "yes"){
+        					if(inputRemoveKuber == "yes"){
         						sh "echo 'Deploy to kubernetes is started!'"
         						withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
         						  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
@@ -65,7 +57,18 @@ pipeline {
         					}
         				}
         			  }
+        }
 
+        stage('Remove from Docker Registry'){
+            steps{
+                script {
+                    if(inputRemoveDocker == "yes"){
+                        //sh curl -u <username>:<password> -X DELETE "<artifactory_url>/artifactory/<repository>/<image>:<tag>"
+                        //docker rmi docker.io/library/0crash0/testdepl:wwa
+                        echo 'remove docker image from registry'
+                    }
+                }
+            }
         }
     }
     post{
