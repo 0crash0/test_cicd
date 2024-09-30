@@ -16,7 +16,7 @@ pipeline {
         stage("Interactive_Input") {
             steps {
                 //sh 'echo $(env)'
-                telegramSend(message: 'Choose required', chatId: '389929520')
+                telegramSend(message: "Choose required", chatId: "${env.TELEGRAM_CHAT_ID}")
                 script {
 
                     // Variables for input
