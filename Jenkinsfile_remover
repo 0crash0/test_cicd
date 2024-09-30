@@ -12,7 +12,7 @@ pipeline {
         TEXT_SUCCESS_BUILD = "${JOB_NAME} is Success: ${SOURCE_BRANCH_NAME} is deleted from kuber"
         TEXT_FAILURE_BUILD = "${JOB_NAME} is Failure"
         TEXT_ABORTED_BUILD = "${JOB_NAME} is Aborted"
-      }
+    }
     stages {
 
         stage("Interactive_Input") {
@@ -55,7 +55,7 @@ pipeline {
         					}
         				}
         			  }
-        	}
+
         }
     }
     post{
