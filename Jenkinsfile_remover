@@ -5,6 +5,7 @@ pipeline {
 
     agent any
     environment {
+        registryCredentials = 'samodocker-repo' 
 
         TELEGRAM_TOKEN = credentials('telegram-token') // change this line with your credential id for Telegram bot access token
         TELEGRAM_CHAT_ID = 389929520 // change this line with your credential id for Telegram bot chat id
@@ -17,7 +18,7 @@ pipeline {
     }
     stages {
         
-        stage("Interactive_Input") {
+/*        stage("Interactive_Input") {
             steps {
                 //sh 'echo $(env)'
                 telegramSend(message: "Choose required", chatId: "${env.TELEGRAM_CHAT_ID}")
@@ -40,11 +41,11 @@ pipeline {
                     inputRemoveDocker = userInput.inputDocker
                 }
             }
-        }
+        }*/
         stage('Removing from kubernetes') {
         			  steps {
         				script {
-        					if(inputRemoveKuber == "yes"){
+        					//if(inputRemoveKuber == "yes"){
         						sh "echo 'Deploy to kubernetes is started!'"
         						withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
         						  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
@@ -53,9 +54,9 @@ pipeline {
                                   sh "./kubectl delete pv nginx-fpm-${SOURCE_BRANCH_NAME}-pv || exit 0"
         						}
         						sh "echo 'nginx-fpm-${SOURCE_BRANCH_NAME} Removed!'"
-        					} else {
-        						sh "echo 'Removing is canceled!'"
-        					}
+        					//} else {
+        					//	sh "echo 'Removing is canceled!'"
+        					//}
         				}
         			  }
         }
@@ -63,10 +64,15 @@ pipeline {
         stage('Remove from Docker Registry'){
             steps{
                 script {
-                    if(inputRemoveDocker == "yes"){
-                        //sh curl -u <username>:<password> -X DELETE "<artifactory_url>/artifactory/<repository>/<image>:<tag>"
-                        sh "docker rmi docker.io/library/0crash0/testdepl:${SOURCE_BRANCH_NAME}"
-                        echo 'remove docker image from registry'
+                    //if(inputRemoveDocker == "yes"){
+                    withCredentials([usernamePassword(credentialsId: env.registryCredentials, usernameVariable: 'username', passwordVariable: 'password')]){
+                 
+                        def url =  "https://samodocker.samo.ru/0crash0/testdepl:${SOURCE_BRANCH_NAME}"
+                        //sh curl -u <username>:<password> -X DELETE "https://samodocker.samo.ru/0crash0/testdepl:${SOURCE_BRANCH_NAME}"
+                        def response = sh(script: "curl -u $username:$password -X DELETE $url", returnStdout: true).trim()
+                        //sh "docker rmi docker.io/library/0crash0/testdepl:${SOURCE_BRANCH_NAME}" //NOT WORKING CERDS?
+                        echo response
+                        //echo 'remove docker image from registry'
                     }
                 }
             }
