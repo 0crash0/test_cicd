@@ -44,7 +44,7 @@ pipeline {
                     //if(inputRemoveDocker == "yes"){
                     withCredentials([usernamePassword(credentialsId: env.registryCredentials, usernameVariable: 'username', passwordVariable: 'password')]){
                  
-                        def url =  "http://registry.samo.ru/repository/docker-host/v2/${env.removingDockerImageName}/manifests/main:${SOURCE_BRANCH_NAME}"
+                        def url =  "http://registry.samo.ru/repository/docker-host/v2/${env.removingDockerImageName}/manifests/${SOURCE_BRANCH_NAME}"
                         
                         //sh curl -u <username>:<password> -X DELETE "https://samodocker.samo.ru/0crash0/testdepl:${SOURCE_BRANCH_NAME}"
                         def response = sh(script: "curl -u $username:$password -X DELETE $url", returnStdout: true).trim()
