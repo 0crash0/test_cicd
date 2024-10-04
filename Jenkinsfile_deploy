@@ -39,8 +39,8 @@ pipeline {
 
     TEXT_PRE_BUILD = "Jenkins is starded for building ${JOB_NAME} [лог сборки](${env.BUILD_URL}) "
     TEXT_SUCCESS_BUILD = "✅ Сборка успешно завершена 😊 🚀\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL}) \nссылка на результат: test-${env.BRANCH_NAME}.samo.ru"
-    TEXT_FAILURE_BUILD = "❌ Сборка завершена с ошибкой 😱\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
-    TEXT_ABORTED_BUILD = "⛔ Build was aborted 🤧\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
+    TEXT_FAILURE_BUILD = "❌ Сборка завершена с ошибкой 🤧\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
+    TEXT_ABORTED_BUILD = "⛔ Build was aborted 😱\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
   }
   agent any
 

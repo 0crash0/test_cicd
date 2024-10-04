@@ -13,9 +13,9 @@ pipeline {
 
         TEXT_PRE_BUILD = "Jenkins is building ${JOB_NAME}"
 
-        TEXT_SUCCESS_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} -- ${SOURCE_BRANCH_NAME} is Deleted from kuber"
-        TEXT_FAILURE_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} -- ${SOURCE_BRANCH_NAME} deletion is Failure"
-        TEXT_ABORTED_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} -- ${SOURCE_BRANCH_NAME} deletion is Aborted"
+        TEXT_SUCCESS_BUILD = "✅ Удаление успешно завершено 😊 🚀\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
+        TEXT_FAILURE_BUILD = "❌ Удаление завершено с ошибкой 🤧\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
+        TEXT_ABORTED_BUILD = "⛔ Удаление отменено 😱\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
     }
     stages {
 
@@ -56,7 +56,7 @@ pipeline {
             }
         }
     }
-    /*post{
+    post{
           success{
                //telegramSend(message: 'Hello World', chatId: 389929520)
                   sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${env.TELEGRAM_CHAT_ID}' -d text='${env.TEXT_SUCCESS_BUILD}'"
@@ -70,5 +70,5 @@ pipeline {
                 sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id=${env.TELEGRAM_CHAT_ID} -d text=${env.TEXT_ABORTED_BUILD}"
           }
 
-    }*/
+    }
 }
