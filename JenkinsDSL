@@ -1,34 +1,83 @@
-multibranchPipelineJob('deploy') {
+pipelineJob('remove_unused_deployment') {
+  definition {
+    cpsScm {
+      scm {
+        git {
+          remote {
+            url("https://github.com/0crash0/test_cicd.git")
+            //credentials('gitlab-token')
+          }
+          branch('*/main')
+        }
+      }
+      scriptPath("Jenkinsfile_remover")
+    }
+  }
+}
+
+
+multibranchPipelineJob('deployTOkubernetes') {
   // Below definiton comes from Job DSL. This is a basic example. 
   // For details please visit https://jenkinsci.github.io/job-dsl-plugin/#method/javaposse.jobdsl.dsl.jobs.MultibranchWorkflowJob.branchSources
   branchSources {
     git {
-      id('1')
+      id('133211233212') // IMPORTANT: use a constant and unique identifier
       remote('https://github.com/0crash0/testcicd_prj.git')
-      includes('main')
+      //credentialsId('your-credentials') 
+      includes('*')
+      //includes('main')
     }
   }
-
+  orphanedItemStrategy {
+    discardOldItems {
+      numToKeep(20)
+    }
+  }
   // Below section for configuring Remote Jenkinsfile Provider Plugin with defaults
   factory{
     remoteJenkinsFileWorkflowBranchProjectFactory{
       localMarker("")
-      matchBranches(true)
-      remoteJenkinsFile("Jenkinsfile")
+      matchBranches(false)
+      remoteJenkinsFile 'Jenkinsfile_deploy'
       remoteJenkinsFileSCM{
         gitSCM{
           userRemoteConfigs{
             userRemoteConfig{
-              name("MyRepo") //Custom Repository Name or ID
+              name("test_cicd") //Custom Repository Name or ID
               url("https://github.com/0crash0/test_cicd.git") //URL for the repository
-              refspec("main") // Branch spec
+              refspec("")//refspec('+refs/heads/master:refs/remotes/origin/master') // Branch spec
               credentialsId("") // Credential ID. Leave blank if not required
             }
             browser{} // Leave blank for default Git Browser
             gitTool("") //Leave blank for default git executable
           }
+          branches {
+            branchSpec {
+              name('main')
+            }
+          }
         }
       }
     }
   }
+  properties{
+        pipelineTriggerProperty{
+            //createActionJobsToTrigger('job1, job2') // Comma separated list of Jobs
+            deleteActionJobsToTrigger('remove_unused_deployment') // Comma separated list of Jobs
+            //actionJobsToTriggerOnRunDelete('job2, job3') // Comma separated list of Jobs
+            branchIncludeFilter('*') // Can bet set to empty string
+            //branchExcludeFilter('main') // Can bet set to empty string
+            /*additionalParameters{ // This block is optional.
+                additionalParameter{ // This block can be defined as much as required
+                    name('KEY1')
+                    value('VALUE1')
+                }
+                additionalParameter{
+                    name('KEY2')
+                    value('VALUE2')
+                }
+            }*/
+        }
+    }
+  
 }
