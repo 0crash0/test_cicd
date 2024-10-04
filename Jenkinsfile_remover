@@ -13,9 +13,9 @@ pipeline {
 
         TEXT_PRE_BUILD = "Jenkins is building ${JOB_NAME}"
 
-        TEXT_SUCCESS_BUILD = "✅ Удаление успешно завершено 😊 🚀\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
-        TEXT_FAILURE_BUILD = "❌ Удаление завершено с ошибкой 🤧\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
-        TEXT_ABORTED_BUILD = "⛔ Удаление отменено 😱\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
+        TEXT_SUCCESS_BUILD = "✅ Удаление успешно завершено 😊 🚀\nветка: ${SOURCE_BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
+        TEXT_FAILURE_BUILD = "❌ Удаление завершено с ошибкой 🤧\nветка: ${SOURCE_BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
+        TEXT_ABORTED_BUILD = "⛔ Удаление отменено 😱\nветка: ${SOURCE_BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
     }
     stages {
 
