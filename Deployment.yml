@@ -17,8 +17,8 @@ metadata:
   name: nginx-fpm-${BRANCH_NAME}-pv
   namespace: nginx-fpm-${BRANCH_NAME}
 spec:
-  persistentVolumeReclaimPolicy: Delete   #  Recycle
-  storageClassName: microk8s-hostpath
+  persistentVolumeReclaimPolicy: Recycle   #   Delete
+#  storageClassName: microk8s-hostpath
   capacity:
     storage: 10Gi
   accessModes:
@@ -36,7 +36,7 @@ metadata:
   name: nginx-fpm-${BRANCH_NAME}-pvc
   namespace: nginx-fpm-${BRANCH_NAME}
 spec:
-  storageClassName: microk8s-hostpath
+  storageClassName: '' #microk8s-hostpath
   accessModes:
     - ReadWriteMany
   resources:
