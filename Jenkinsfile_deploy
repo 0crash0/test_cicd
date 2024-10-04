@@ -16,10 +16,12 @@ def configFile
 
 pipeline {
   environment {
-    initDockerImageName = "samodocker.samo.ru/0crash0/testdepl"
-    nginxDockerImageName = "samodocker.samo.ru/nginx:stable-alpine3.20"
-    phpfpmDockerImageName = "samodocker.samo.ru/0crash0/php-samo:8.3.11-fpm-msodbc18-alpine3.20"
+    registryDomain = "samodocker.samo.ru/"  
     registryCredentials = 'samodocker-repo' //'dockerhub'
+    initDockerImageName = "${env.registryDomain}0crash0/testdepl"
+    nginxDockerImageName = "${env.registryDomain}nginx:stable-alpine3.20"
+    phpfpmDockerImageName = "${env.registryDomain}0crash0/php-samo:8.3.11-fpm-msodbc18-alpine3.20"
+    
 
 
     kubeCredential='kub_x509'

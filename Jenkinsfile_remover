@@ -6,6 +6,7 @@ pipeline {
     agent any
     environment {
         registryCredentials = 'samodocker-repo' 
+        removingDockerImageName = "0crash0/testdepl"
 
         TELEGRAM_TOKEN = credentials('telegram-token') // change this line with your credential id for Telegram bot access token
         TELEGRAM_CHAT_ID = 389929520 // change this line with your credential id for Telegram bot chat id
@@ -17,31 +18,7 @@ pipeline {
         TEXT_ABORTED_BUILD = "Build ${JOB_NAME}-${env.BUILD_ID} on ${env.BUILD_URL} -- ${SOURCE_BRANCH_NAME} deletion is Aborted"
     }
     stages {
-        
-/*        stage("Interactive_Input") {
-            steps {
-                //sh 'echo $(env)'
-                telegramSend(message: "Choose required", chatId: "${env.TELEGRAM_CHAT_ID}")
-                script {
 
-                    def userInput = input(
-                            id: 'userInput', message: "Branch ${SOURCE_BRANCH_NAME} is deleted are we remove it from kuber?",
-                            parameters: [
-                                    [$class: 'ChoiceParameterDefinition',
-                                    choices: ['no','yes'].join('\n'),
-                                    name: 'inputKuber',
-                                    description: 'Remove branch from kubernetes?'],
-                                    [$class: 'ChoiceParameterDefinition',
-                                     choices: ['no','yes'].join('\n'),
-                                     name: 'inputDocker',
-                                     description: 'Remove docker image from registry?'],
-                            ])
-
-                    inputRemoveKuber = userInput.inputKuber
-                    inputRemoveDocker = userInput.inputDocker
-                }
-            }
-        }*/
         stage('Removing from kubernetes') {
         			  steps {
         				script {
@@ -67,7 +44,8 @@ pipeline {
                     //if(inputRemoveDocker == "yes"){
                     withCredentials([usernamePassword(credentialsId: env.registryCredentials, usernameVariable: 'username', passwordVariable: 'password')]){
                  
-                        def url =  "https://samodocker.samo.ru/0crash0/testdepl:${SOURCE_BRANCH_NAME}"
+                        def url =  "http://registry.samo.ru/repository/docker-host/v2/${env.removingDockerImageName}/manifests/main:${SOURCE_BRANCH_NAME}"
+                        
                         //sh curl -u <username>:<password> -X DELETE "https://samodocker.samo.ru/0crash0/testdepl:${SOURCE_BRANCH_NAME}"
                         def response = sh(script: "curl -u $username:$password -X DELETE $url", returnStdout: true).trim()
                         //sh "docker rmi docker.io/library/0crash0/testdepl:${SOURCE_BRANCH_NAME}" //NOT WORKING CERDS?
