@@ -1,0 +1,181 @@
+//variables that defines commit paterns
+def cicd_start_pattern="[cicd]"
+def telegramm_pattern = /\[chat (\d+)\]/
+//def config_pattern = /\[conf (\w+)\]/
+def config_pattern = /\[conf ([A-Za-z0-9.\/]+)\]/
+
+
+// variables that used in deployment DONT TOUCH!!!
+def dockerImage
+def inputDeployKuber
+def inputPushDocker
+def commitMessage
+
+def telegramChatID
+def configFile
+
+pipeline {
+  environment {
+    initDockerImageName = "samodocker.samo.ru/0crash0/testdepl"
+    nginxDockerImageName = "samodocker.samo.ru/nginx:stable-alpine3.20"
+    phpfpmDockerImageName = "samodocker.samo.ru/0crash0/php-samo:8.3.11-fpm-msodbc18-alpine3.20"
+    registryCredentials = 'samodocker-repo' //'dockerhub'
+
+
+    kubeCredential='kub_x509'
+    //private docker repo
+    DOCKER_REPO_URL = 'http://samodocker.samo.ru/repository/docker-hosted/' //'https://registry.hub.docker.com'
+    //projects configs git repo
+    CONF_BRANCH_NAME='main'
+    CONF_REPO_URL='https://github.com/0crash0/cicd_configs.git'
+    //git repo for deployment etc
+    DEPLOY_BRANCH_NAME='main'
+    DEPLOY_REPO_URL='https://github.com/0crash0/test_cicd.git'
+
+    TELEGRAM_TOKEN = credentials('telegram-token') // change this line with your credential id for Telegram bot access token
+    TELEGRAM_CHAT_ID = 1389929520 // change this line with your credential id for Telegram bot chat id
+
+    TEXT_PRE_BUILD = "Jenkins is starded for building ${JOB_NAME} [лог сборки](${env.BUILD_URL}) "
+    TEXT_SUCCESS_BUILD = "✅ Сборка успешно завершена 😊 🚀\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL}) \nссылка на результат: test-${env.BRANCH_NAME}.samo.ru"
+    TEXT_FAILURE_BUILD = "❌ Сборка завершена с ошибкой 😱\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
+    TEXT_ABORTED_BUILD = "⛔ Build was aborted 🤧\nветка: ${env.BRANCH_NAME} [лог сборки](${env.BUILD_URL})"
+  }
+  agent any
+
+  stages {
+    stage('Init') {
+      steps {
+        echo 'Initializing..'
+        echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+        echo "Current branch: ${env.BRANCH_NAME}"
+      }
+    }
+    stage('Pre-Build Check') {
+      steps {
+        script {
+          commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+          echo "Latest commit message: ${commitMessage}"
+          if (commitMessage =~ telegramm_pattern) {
+              def match = commitMessage =~ telegramm_pattern
+              telegramChatID=match[0][1]
+          }
+          if(commitMessage =~ config_pattern){
+            def match = commitMessage =~ config_pattern
+            configFile=match[0][1]
+          }
+          if (commitMessage.contains(cicd_start_pattern) && (commitMessage =~ config_pattern)) {
+            
+          }
+          else  {
+            //currentBuild.result = 'ABORTED'
+            catchError(buildResult: 'ABORTED', stageResult: 'ABORTED') {
+              error("Build skipped there is no [cicd] tag in commit message")
+            }
+            currentBuild.doTerm()
+          }
+        }
+      }
+    }
+    stage('Clone config Repository') {
+            steps {
+                //git branch: "${env.CONF_BRANCH_NAME}", url: "${env.CONF_REPO_URL}"
+                checkout([$class: 'GitSCM', branches: [[name: "*/${env.CONF_BRANCH_NAME}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'configs']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: env.registryCredentials, url: env.CONF_REPO_URL ]]])
+                sh 'ls -la'
+            }
+    }
+    stage('Clone deploy Repository') {
+            steps {
+                //git branch: "${env.CONF_BRANCH_NAME}", url: "${env.CONF_REPO_URL}"
+                checkout([$class: 'GitSCM', branches: [[name: "*/${env.DEPLOY_BRANCH_NAME}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'deploym']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: env.registryCredentials, url: env.DEPLOY_REPO_URL ]]])
+                sh 'ls -la'
+                sh 'cp -fR  ./deploym/* .'
+            }
+    }
+    stage('Checkout Source') {
+      steps {
+        echo "${env.RJPP_SCM_URL}"
+        echo "${env.RJPP_JENKINSFILE}"
+        echo "${env.RJPP_BRANCH}"
+        echo "${env.RJPP_LOCAL_MARKER}"
+        echo env.BRANCH_NAME
+        sh 'ls -la'
+      }
+    }
+    stage('Build image') {
+      steps{
+        script {
+          //docker.withRegistry('DOCKER_REPO_URL', 'registryCredentials') {
+            dockerImage = docker.build("${initDockerImageName}:${env.BRANCH_NAME}", "--build-arg CONFIGFILENAME=./configs/${configFile} .")
+          //}
+        }
+      }
+    }
+    stage('Pushing Image') {
+      steps{
+        script {
+          docker.withRegistry("${env.DOCKER_REPO_URL}", "${env.registryCredentials}") {
+          //env.CONFIGFILENAME = "./configs/${configFile}"
+          //docker.withRegistry( 'https://registry.hub.docker.com', registryCredentials ) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+    stage('k8s remove old') {
+      steps {
+        //build job: 'remove_unused_deployment', parameters: [[$class: 'StringParameterValue', name: 'SOURCE_BRANCH_NAME', value: env.BRANCH_NAME]], wait: true
+        withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
+        						  sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
+        						  sh 'chmod u+x ./kubectl'
+                      sh "./kubectl delete deployment -n nginx-fpm-${BRANCH_NAME} nginx phpfpm || exit 0"
+                     /* script{
+                        def getns = sh(script: "./kubectl get ns", returnStdout: true).trim()
+                        if (getns.contains("nginx-fpm-${BRANCH_NAME}")){
+                          def getdepl = sh(script: "./kubectl get deployment -n  nginx-fpm-${BRANCH_NAME}", returnStdout: true).trim()
+                          if(getdepl =~ /No.resources.found/){//getdepl.contains("No resources found")){ 
+                            sh 'echo "Already deleted!"'
+                          }
+                          else{
+                            sh "./kubectl delete deployment -n nginx-fpm-${BRANCH_NAME} nginx phpfpm"
+                          }
+                        }
+                      }*/
+        						}
+      }
+    }
+	  stage('Integrate Remote k8s with Jenkins ') {
+		  steps {
+        script {
+          sh "echo 'Deploy to kubernetes is started!'"
+          withKubeConfig( clusterName: 'microk8s-cluster', contextName: 'microk8s-cluster', credentialsId: 'kube_just_cert', namespace: 'def', restrictKubeConfigAccess: false, serverUrl: 'https://172.16.0.230:16443') {
+            //sh 'curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"'
+            //sh 'chmod u+x ./kubectl'
+            sh './kubectl get nodes'
+            sh 'envsubst \'${BRANCH_NAME} ${initDockerImageName} ${nginxDockerImageName} ${phpfpmDockerImageName}\' < Deployment.yml | ./kubectl apply -f -'
+          }
+          sh "echo 'Deploy to kubernetes is finished!'"
+        }
+		  }
+	  }
+  }
+  post  {
+          always{
+            telegramSend(message:'${PROJECT_NAME}:${BUILD_STATUS}',chatId: env.TELEGRAM_CHAT_ID)
+          }
+          success{
+              script {
+                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${telegramChatID}' -d parse_mode='MARKDOWN' -d text='${env.TEXT_SUCCESS_BUILD}\nФайл конфигурации: ${configFile}\n ||commit message: ${commitMessage}||'"
+              }
+          }
+          failure{
+              script {
+                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${telegramChatID}' -d parse_mode='MARKDOWN' -d text='${env.TEXT_FAILURE_BUILD}\nСообщение об ошибке: ${env.BUILD_FAILED_MESSAGE}\n ||commit message: ${commitMessage} ||'"
+              }
+          }
+          aborted{
+              script {
+                sh "curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage -d chat_id='${telegramChatID}' -d parse_mode='MARKDOWN' -d text='${env.TEXT_ABORTED_BUILD}'" //-d parse_mode=markdown
+              }
+          }
+  }
+}
