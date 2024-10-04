@@ -39,6 +39,7 @@ Remote Jenkinsfile Provider
 MultiBranch Action Triggers
 Pipeline: Stage View
 Docker Pipeline
+Kubernetes CLI
 Job DSL  // IF YOU LIKE TO GENERTE ALL JOBS USING JenkinsDSL File
 
 ---------------------------------------------------------------------
