@@ -8,7 +8,6 @@ COPY . /app
 RUN npm install
 RUN npm run build
 COPY ${CONFIGFILENAME} /app/dist/
-RUN ls -la
 
 # production environment
 FROM alpine:3.20.3

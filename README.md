@@ -72,6 +72,7 @@ Purge Job History Plugin
 
 
 красотульки 
+https://devopscube.com/setup-custom-materialized-ui-theme-jenkins/
 
 Login theme
 material theme
