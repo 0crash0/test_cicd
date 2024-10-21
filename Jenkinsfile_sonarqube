@@ -1,0 +1,24 @@
+node {
+    environment {
+        //BRANCH_NAME='asds'
+    }
+  stage('SCM') {
+    //checkout([$class: 'GitSCM', branches: [[name: "*/asds"]], 
+    //doGenerateSubmoduleConfigurations: false,
+    //extensions: [
+    //    [$class: 'RelativeTargetDirectory', relativeTargetDir: 'configs']
+    //    ], 
+    //submoduleCfg: [],userRemoteConfigs: [[
+    //url: "https://github.com/0crash0/testcicd_prj.git" ]]
+    //])
+    sh "echo \'sonar.projectKey=test\nsonar.branch.name = ${env.BRANCH_NAME}\' > sonar-project.properties "
+    sh 'cat sonar-project.properties'
+    sh 'ls -la'
+  }
+  stage('SonarQube Analysis') {
+    def scannerHome = tool 'sonar-cli';
+    withSonarQubeEnv() {
+      sh "${scannerHome}/sonar-scanner"
+    }
+  }
+}
