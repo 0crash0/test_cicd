@@ -8,7 +8,7 @@ node {
 				checkout([$class: 'GitSCM', branches: [[name: "*/${env.BRANCH_NAME}"]], 
 					doGenerateSubmoduleConfigurations: false,
 					extensions: [
-						[$class: 'RelativeTargetDirectory', relativeTargetDir: 'configs']
+						[$class: 'RelativeTargetDirectory', relativeTargetDir: 'deploym']
 					], 
 					submoduleCfg: [],userRemoteConfigs: [[
 						url: "https://github.com/0crash0/testcicd_prj.git" ]]
@@ -17,7 +17,7 @@ node {
                 //sh 'cp -fR  ./deploym/testCICD_frontend/* .'
     }
   stage('create sonar props') {
-    sh "echo \'sonar.projectKey=test\nsonar.branch.name = ${env.BRANCH_NAME}\' > sonar-project.properties "
+    sh "echo \'sonar.sources=\./deploym/\nsonar.projectKey=test\nsonar.branch.name = ${env.BRANCH_NAME}\' > sonar-project.properties "
     sh 'cat sonar-project.properties'
     sh 'ls -la'
   }
