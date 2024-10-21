@@ -2,7 +2,14 @@ node {
     environment {
         //BRANCH_NAME='asds'
     }
-  stage('SCM') {
+	stage('Clone deploy Repository') {
+            steps {
+                sh "git checkout -f ${env.BRANCH_NAME}"
+                sh 'ls -la'
+                //sh 'cp -fR  ./deploym/testCICD_frontend/* .'
+            }
+    }
+  stage('create sonar props') {
     //checkout([$class: 'GitSCM', branches: [[name: "*/asds"]], 
     //doGenerateSubmoduleConfigurations: false,
     //extensions: [
