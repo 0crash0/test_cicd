@@ -4,15 +4,15 @@ node {
     }
 	stage('Clone deploy Repository') {
 				sh 'printenv'
-                sh "git checkout -f "
-				//checkout([$class: 'GitSCM', branches: [[name: "*/${env.BRANCH_NAME}"]], 
-				//	doGenerateSubmoduleConfigurations: false,
-				//	extensions: [
-				//		[$class: 'RelativeTargetDirectory', relativeTargetDir: 'configs']
-				//	], 
-				//	submoduleCfg: [],userRemoteConfigs: [[
-				//		url: "https://github.com/0crash0/testcicd_prj.git" ]]
-				//])
+                //sh "git checkout -f "
+				checkout([$class: 'GitSCM', branches: [[name: "*/${env.BRANCH_NAME}"]], 
+					doGenerateSubmoduleConfigurations: false,
+					extensions: [
+						[$class: 'RelativeTargetDirectory', relativeTargetDir: 'configs']
+					], 
+					submoduleCfg: [],userRemoteConfigs: [[
+						url: "{$env.RJPP_SCM_URL}" ]]
+				])
                 sh 'ls -la'
                 //sh 'cp -fR  ./deploym/testCICD_frontend/* .'
     }
