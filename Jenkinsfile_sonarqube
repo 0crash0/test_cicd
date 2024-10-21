@@ -17,7 +17,7 @@ node {
                 //sh 'cp -fR  ./deploym/testCICD_frontend/* .'
     }
   stage('create sonar props') {
-    sh "echo \'sonar.sources=\./deploym/\nsonar.projectKey=test\nsonar.branch.name = ${env.BRANCH_NAME}\' > sonar-project.properties "
+    sh "echo \'sonar.sources=./deploym/\nsonar.projectKey=test\nsonar.branch.name = ${env.BRANCH_NAME}\' > sonar-project.properties "
     sh 'cat sonar-project.properties'
     sh 'ls -la'
   }
