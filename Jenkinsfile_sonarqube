@@ -5,20 +5,20 @@ node {
 	stage('Clone deploy Repository') {
             steps {
 				sh 'printenv'
-                sh "git checkout -f ${env.BRANCH_NAME}"
+                //sh "git checkout -f "
+				checkout([$class: 'GitSCM', branches: [[name: "*/${env.BRANCH_NAME}"]], 
+					doGenerateSubmoduleConfigurations: false,
+					extensions: [
+						[$class: 'RelativeTargetDirectory', relativeTargetDir: 'configs']
+					], 
+					submoduleCfg: [],userRemoteConfigs: [[
+						url: "https://github.com/0crash0/testcicd_prj.git" ]]
+				])
                 sh 'ls -la'
                 //sh 'cp -fR  ./deploym/testCICD_frontend/* .'
             }
     }
   stage('create sonar props') {
-    //checkout([$class: 'GitSCM', branches: [[name: "*/asds"]], 
-    //doGenerateSubmoduleConfigurations: false,
-    //extensions: [
-    //    [$class: 'RelativeTargetDirectory', relativeTargetDir: 'configs']
-    //    ], 
-    //submoduleCfg: [],userRemoteConfigs: [[
-    //url: "https://github.com/0crash0/testcicd_prj.git" ]]
-    //])
     sh "echo \'sonar.projectKey=test\nsonar.branch.name = ${env.BRANCH_NAME}\' > sonar-project.properties "
     sh 'cat sonar-project.properties'
     sh 'ls -la'
