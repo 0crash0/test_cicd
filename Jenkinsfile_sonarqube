@@ -4,6 +4,7 @@ node {
     }
 	stage('Clone deploy Repository') {
             steps {
+				sh 'printenv'
                 sh "git checkout -f ${env.BRANCH_NAME}"
                 sh 'ls -la'
                 //sh 'cp -fR  ./deploym/testCICD_frontend/* .'
